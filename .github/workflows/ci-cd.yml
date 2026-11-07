@@ -1,0 +1,80 @@
+
+name: Angular and Spring Boot CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and test application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: angular-app/package-lock.json
+
+      - name: Build Angular
+        working-directory: angular-app
+        run: |
+          npm ci
+          npm run build -- --configuration production
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: springboot/app/pom.xml
+
+      - name: Test Spring Boot
+        working-directory: springboot/app
+        run: |
+          chmod +x mvnw
+          ./mvnw -B test
+
+  deploy:
+    name: Deploy to Ubuntu VMware
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, linux, x64]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        run: |
+          docker compose up -d --build --remove-orphans
+
+      - name: Check containers
+        run: |
+          docker compose ps
+
+      - name: Check API
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent http://localhost/api/user/all; then
+              echo "Deployment successful!"
+              exit 0
+            fi
+            echo "Waiting for API..."
+            sleep 5
+          done
+
+          echo "API health check failed"
+          docker compose logs --tail=100
+          exit 1
