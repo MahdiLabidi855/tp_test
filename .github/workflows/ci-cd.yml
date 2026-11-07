@@ -43,38 +43,3 @@ jobs:
         run: |
           chmod +x mvnw
           ./mvnw -B test
-
- 
-  deploy:
-    name: Deploy to Ubuntu VMware
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, linux, x64]
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Deploy with Docker Compose
-        run: |
-          docker compose up -d --build --remove-orphans --wait --wait-timeout 120
-
-      - name: Check containers
-        run: |
-          docker compose ps
-
-      - name: Check API
-        run: |
-          for i in {1..30}; do
-            if curl --fail --silent http://localhost/api/user/all; then
-              echo "Deployment successful!"
-              exit 0
-            fi
-            echo "Waiting for API..."
-            sleep 5
-          done
-
-          echo "API health check failed"
-          docker compose logs --tail=100
-          exit 1
