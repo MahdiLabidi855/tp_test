@@ -1,26 +1,188 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+<div class="dashboard">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">P</div>
+      <span>PeopleHub</span>
+    </div>
 
-<div class="centered-div">
-  <table class="table-container">
-    <thead>
-      <tr>
-        <td class="td">ID Nouran Zouabi</td>
-        <td class="td">First Name</td>
-        <td class="td">Last Name</td>
-        <td class="td">Action</td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let user of usersList">
-        <td class="td">{{user.id}}</td>
-        <td class="td">{{user.firstName}}</td>
-        <td class="td">{{user.lastName}}</td>
-        <td> <i class="fa fa-trash" aria-hidden="true" (click)="deleteUser(user?.id || '')"></i></td>
-      </tr>
-    </tbody>
-  </table>
-  <input type="text" placeholder="First Name" #firstname>
-  <input type="text" placeholder="Last Name" #lastname style="margin-top: 10px;">
-  <button (click)="addUser(firstname.value,lastname.value)" style="margin-top: 30px;">add User</button>
+    <div class="sidebar-section">
+      <p class="sidebar-label">MENU</p>
 
+      <a class="nav-item active">
+        <span class="nav-icon">▦</span>
+        Dashboard
+      </a>
+
+      <a class="nav-item">
+        <span class="nav-icon">♙</span>
+        Users
+      </a>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="admin-avatar">A</div>
+      <div>
+        <strong>Administrator</strong>
+        <small>Manage your workspace</small>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">WORKSPACE / USERS</p>
+        <h1>User Management</h1>
+        <p class="subtitle">Manage and organize your users in one place.</p>
+      </div>
+
+      <div class="topbar-badge">
+        <span class="status-dot"></span>
+        System active
+      </div>
+    </header>
+
+    <!-- Statistics -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">♙</div>
+        <div>
+          <p>Total users</p>
+          <h2>{{ usersList.length }}</h2>
+          <span class="stat-note">Registered accounts</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon purple">✦</div>
+        <div>
+          <p>Workspace</p>
+          <h2>PeopleHub</h2>
+          <span class="stat-note">User administration</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Users section -->
+    <section class="content-card">
+      <div class="section-header">
+        <div>
+          <h2>All users</h2>
+          <p>View and manage registered users.</p>
+        </div>
+
+        <span class="user-count">{{ usersList.length }} users</span>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>USER</th>
+              <th>FIRST NAME</th>
+              <th>LAST NAME</th>
+              <th>ID</th>
+              <th class="action-heading">ACTION</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let user of usersList">
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar">
+                    {{ (user.firstName || '?').charAt(0) | uppercase }}
+                  </div>
+                  <span class="user-name">
+                    {{ user.firstName }} {{ user.lastName }}
+                  </span>
+                </div>
+              </td>
+
+              <td>{{ user.firstName }}</td>
+              <td>{{ user.lastName }}</td>
+              <td>
+                <span class="id-badge">#{{ user.id }}</span>
+              </td>
+
+              <td class="action-cell">
+                <button
+                  type="button"
+                  class="delete-button"
+                  aria-label="Delete user"
+                  title="Delete user"
+                  (click)="deleteUser(user?.id || '')">
+                  <span>✕</span>
+                  Delete
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="usersList.length === 0">
+              <td colspan="5">
+                <div class="empty-state">
+                  <div class="empty-icon">♙</div>
+                  <h3>No users yet</h3>
+                  <p>Add your first user using the form below.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Add user section -->
+    <section class="content-card add-user-card">
+      <div class="section-header">
+        <div>
+          <h2>Add a new user</h2>
+          <p>Enter the user's details to create an account.</p>
+        </div>
+
+        <div class="add-icon">+</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="firstname">First name</label>
+          <input
+            id="firstname"
+            type="text"
+            placeholder="e.g. Nourane"
+            #firstname>
+        </div>
+
+        <div class="form-group">
+          <label for="lastname">Last name</label>
+          <input
+            id="lastname"
+            type="text"
+            placeholder="e.g. Zouabi"
+            #lastname>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <p>Make sure the information is correct before adding.</p>
+
+        <button
+          type="button"
+          class="add-button"
+          [disabled]="!firstname.value.trim() || !lastname.value.trim()"
+          (click)="addUser(firstname.value.trim(), lastname.value.trim())">
+          <span>+</span>
+          Add user
+        </button>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <span>PeopleHub</span>
+      <span>User Management Dashboard</span>
+    </footer>
+  </main>
 </div>
