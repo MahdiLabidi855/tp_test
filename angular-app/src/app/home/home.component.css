@@ -483,6 +483,12 @@
   margin: 0;
 }
 
+.form-error {
+  margin: 14px 0 0;
+  color: #b91c1c;
+  font-size: 12px;
+}
+
 .add-button {
   display: inline-flex;
   align-items: center;

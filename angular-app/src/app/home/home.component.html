@@ -146,38 +146,49 @@
         <div class="add-icon">+</div>
       </div>
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="firstname">First name</label>
-          <input
-            id="firstname"
-            type="text"
-            placeholder="e.g. Nourane"
-            #firstname>
+      <form (ngSubmit)="addUser()" #userForm="ngForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="firstname">First name</label>
+            <input
+              id="firstname"
+              name="firstName"
+              type="text"
+              placeholder="e.g. Nourane"
+              autocomplete="given-name"
+              required
+              [(ngModel)]="firstName">
+          </div>
+
+          <div class="form-group">
+            <label for="lastname">Last name</label>
+            <input
+              id="lastname"
+              name="lastName"
+              type="text"
+              placeholder="e.g. Zouabi"
+              autocomplete="family-name"
+              required
+              [(ngModel)]="lastName">
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="lastname">Last name</label>
-          <input
-            id="lastname"
-            type="text"
-            placeholder="e.g. Zouabi"
-            #lastname>
+        <p *ngIf="addUserError" class="form-error" role="alert">
+          {{ addUserError }}
+        </p>
+
+        <div class="form-footer">
+          <p>Make sure the information is correct before adding.</p>
+
+          <button
+            type="submit"
+            class="add-button"
+            [disabled]="userForm.invalid || isAdding || !firstName.trim() || !lastName.trim()">
+            <span>{{ isAdding ? '…' : '+' }}</span>
+            {{ isAdding ? 'Adding...' : 'Add user' }}
+          </button>
         </div>
-      </div>
-
-      <div class="form-footer">
-        <p>Make sure the information is correct before adding.</p>
-
-        <button
-          type="button"
-          class="add-button"
-          [disabled]="!firstname.value.trim() || !lastname.value.trim()"
-          (click)="addUser(firstname.value.trim(), lastname.value.trim())">
-          <span>+</span>
-          Add user
-        </button>
-      </div>
+      </form>
     </section>
 
     <footer class="page-footer">
